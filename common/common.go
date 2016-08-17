@@ -1,10 +1,5 @@
 package common
 
-import (
-    "io"
-    "os"
-)
-
 // for errors, look at package io: EOF
 const (
 	ProviderClientListenerAddr = ":8000"
@@ -12,19 +7,8 @@ const (
 	ProviderListenerAddr       = ":8002"
 	LoggerAddr                 = ":8003"
 	RegionalMasterListenerAddr = ":8004"
+    LocalMasterListenerAddr    = ":8005"
 )
-
-
-// More specific Errors example with fmt.Errorf(...)
-func runCipher() error {
-  if true {
-    _, err := io.ReadAll(os.Stdin)
-    if err != nil {
-      return err
-    }
-  }
-  return nil
-}
 
 type Nothing struct{}
 
@@ -58,6 +42,10 @@ type GetJobRequestFromLogReply struct {
 
 type ProviderRegisterArgs struct {
 	pID string
+}
+
+type ClientJoinLeaveArgs struct {
+    pID string
 }
 
 type PingArgs struct {

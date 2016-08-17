@@ -17,7 +17,7 @@ import (
 	"net"
 	"net/rpc"
 	"time"
-	"tusing/conduit_append/common"
+	"github/Conduit/common"
 	"fmt"
 )
 
@@ -43,6 +43,7 @@ func (o *ProviderOrClient) RequestRegionalMaster(p *common.RequestRegionalMaster
 // Ping gets ping from regional master and updates the active regional masters
 func (r *RegionalMaster) Ping(a *common.PingArgs) {
 	// Add regional master to active regional masters
+    err := 0
 	r.c.activeRegionalMasters.Set(a.Addr, err, cache.DefaultExpiration)
 }
 
