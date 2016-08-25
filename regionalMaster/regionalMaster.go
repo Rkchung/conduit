@@ -31,12 +31,11 @@ type JobRequest struct {
 }
 
 // Gets pings from local master and updates the current local master list
-func (lm LocalMaster) registerBeats(a common.PingArgs) {
+func (lm LocalMaster) registerBeats(Addr string) {
   // Get pings
-  id := a.Addr
   err := (*string)(nil)
   // Add local master to active local masters
-  lm.r.activeLocalMasters.Set(id, err, cache.DefaultExpiration)
+  lm.r.activeLocalMasters.Set(Addr, err, cache.DefaultExpiration)
 }
 
 // internals
@@ -120,7 +119,7 @@ func (r *regionalMaster) listenForClients() {
 // Pings the conduit server so it knows that the regional master is active
 func (rm *regionalMaster) ping() {
   args := common.PingArgs{rm.addr}
-	err := rm.server.Call("RegionalMaster.Ping", &args, nil)
+	err := rm.server.Call("ConduitServer.Ping", &args, nil)
 	if err != nil {
 		fmt.Errorf("Unable to Ping Server: %s", err)
 	}
@@ -128,14 +127,15 @@ func (rm *regionalMaster) ping() {
 }
 
 // Appends the JobRequest to the log and returns the requestID, request_time, and a set of local masters
-func (c Client) makeNewRequest(provider_id string) (int, string, string) {
+func (c Client) makeNewRequest(provider_id string) (time.Time, string, string) {
   requestTime := time.Now()
-  requestID := random(0, 2147483647)
+  requestID := string(random(0, 2147483647))
   // TODO: check if collision with another request_id
   newRequest := JobRequest{requestTime: requestTime, requestID: requestID}
   c.r.appendNewRequest(newRequest)
-  for a := range c.r.activeRegionalMasters.Items() {
-    master := a
+  var master string
+  for a := range c.r.activeLocalMasters.Items() {
+    master = a
   }
   // TODO: send requestID, request_time and local masters to client
   return requestTime, requestID, master
@@ -152,7 +152,7 @@ func (p Provider) appendEndTime(requestID string, time time.Time) {
 }
 
 // Appends new request to log
-func (p Provider) appendNewRequest(newRequest *JobRequest) {
+func (r regionalMaster) appendNewRequest(newRequest JobRequest) {
   // TODO: Append request stuff
 }
 
@@ -163,7 +163,7 @@ func (p Provider) register(Addr string) {
   if err != nil {
       log.Fatal(err)
   }
-  p.r.providers[Addr] = string(pID[:100])
+  p.r.providers[Addr] = string(pID[:15])
 }
 
 // Registers the client and gives ID
@@ -174,10 +174,10 @@ func (c Client) register(publicKey string) {
       log.Fatal(err)
   }
   // Saves the pID of client and publicKey
-  c.r.clients[string(pID[:100])] = publicKey
+  c.r.clients[string(pID[:15])] = publicKey
 }
   
 // Returns request info from requestID
-func (r regionalMaster) getRequest(requestID int) (JobRequest) {
+func (r regionalMaster) getRequest(requestID int) {
   
 }

@@ -9,7 +9,7 @@ Purpose: To keep track of responsive regional masters and send the address of an
 Methods: Ping (gets ping from regional master and updates its aliveness), RequestRegionaMaster (gets request for regional master and sends back the address of the regional master)
 */
 
-package conduit
+package main
 
 import (
 	"github.com/patrickmn/go-cache"
